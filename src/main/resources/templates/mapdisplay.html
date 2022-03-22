@@ -19,22 +19,21 @@
 
 <div id='myMap' style='width: 100vw; height: 100vh;'></div>
 <script type='text/javascript'>
-    window.onload = setupRefresh;
-
-    function setupRefresh() {
-        setTimeout("refreshPage();", 5000); // refresh rate in milliseconds
-    }
-
-    function refreshPage() {
-        window.location = location.href;
-    }
+    // window.onload = setupRefresh;
+    //
+    // function setupRefresh() {
+    //     setTimeout("refreshPage();", 5000); // refresh rate in milliseconds
+    // }
+    //
+    // function refreshPage() {
+    //     window.location = location.href;
+    // }
 
     function loadMapScenario() {
         var map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
             /* No need to set credentials if already passed in URL */
-            // center: new Microsoft.Maps.Location(51.49, -0.14),
             center: new Microsoft.Maps.Location(38.6240528, -90.1771256),
-            zoom: 12
+            zoom: 8
         });
 
         Microsoft.Maps.loadModule('Microsoft.Maps.GeoXml', function () {

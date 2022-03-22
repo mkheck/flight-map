@@ -24,7 +24,7 @@ public class FlightMapApplication {
 
 @Controller
 class FMController {
-	private final WebClient client = WebClient.create("http://localhost:9090/states");
+	private final WebClient client = WebClient.create("http://localhost:9090/positions");
 
 	@GetMapping("/positions")
 	@ResponseBody
