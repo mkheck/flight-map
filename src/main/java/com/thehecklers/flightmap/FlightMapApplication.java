@@ -31,7 +31,7 @@ class FMController {
 	Iterable<Position> getPositions() {
 //		Test data
 //		return Arrays.asList(new Position(38.6240528F, -90.1771256F), new Position(38.5647893F,-90.165382F));
-		
+
 		return client.get()
 				.retrieve()
 				.bodyToFlux(Position.class)

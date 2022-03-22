@@ -19,6 +19,16 @@
 
 <div id='myMap' style='width: 100vw; height: 100vh;'></div>
 <script type='text/javascript'>
+    window.onload = setupRefresh;
+
+    function setupRefresh() {
+        setTimeout("refreshPage();", 5000); // refresh rate in milliseconds
+    }
+
+    function refreshPage() {
+        window.location = location.href;
+    }
+
     function loadMapScenario() {
         var map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
             /* No need to set credentials if already passed in URL */
