@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -24,15 +25,23 @@ public class FlightMapApplication {
 
 @Controller
 class FMController {
-	private final WebClient client = WebClient.create("http://localhost:9090/positions");
+	private final WebClient client = WebClient.create("http://localhost:9090");
 
 	@GetMapping("/positions")
 	@ResponseBody
-	Iterable<Position> getPositions() {
+	Iterable<Position> getPositions(@RequestParam(required = false) String oc,
+									@RequestParam(required = false) String tracklo,
+									@RequestParam(required = false) String trackhi) {
 //		Test data
 //		return Arrays.asList(new Position(38.6240528F, -90.1771256F), new Position(38.5647893F,-90.165382F));
+		var ocParam = (null == oc ? "" : "oc=" + oc);
+		var trackParams = ((null == tracklo) || (null == trackhi) ? "" : "tracklo=" + tracklo +
+				"&trackhi=" + trackhi);
+		var allParams = ocParam +
+				(trackParams.length() > 0 ? "&" + trackParams : "");
 
 		return client.get()
+				.uri("/positions" + (allParams.length() > 0 ? "?" + allParams : ""))
 				.retrieve()
 				.bodyToFlux(Position.class)
 				.collectList()
