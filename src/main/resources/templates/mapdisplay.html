@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>geoxmlreadfromurlHTML</title>
+    <meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
+    <style type='text/css'>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Helvetica, Arial, Sans-Serif
+        }
+    </style>
+</head>
+
+<body>
+<div id='printoutPanel'></div>
+
+<div id='myMap' style='width: 100vw; height: 100vh;'></div>
+<script type='text/javascript'>
+    function loadMapScenario() {
+        var map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
+            /* No need to set credentials if already passed in URL */
+            // center: new Microsoft.Maps.Location(51.49, -0.14),
+            center: new Microsoft.Maps.Location(38.6240528, -90.1771256),
+            zoom: 12
+        });
+
+        Microsoft.Maps.loadModule('Microsoft.Maps.GeoXml', function () {
+            var callback = function (dataset) {
+                if (dataset.shapes) {
+                    var l = new Microsoft.Maps.Layer();
+                    l.add(dataset.shapes);
+                    map.layers.insert(l);
+                }
+                if (dataset.layers) {
+                    for (var i = 0, len = dataset.layers.length; i < len; i++) {
+                        map.layers.insert(dataset.layers[i]);
+                    }
+                }
+                document.getElementById('printoutPanel').innerHTML = '<textarea id="geoxmlTextArea" cols=29 rows=21></textarea>';
+                document.getElementById('geoxmlTextArea').value = Microsoft.Maps.GeoXml.write(dataset, {
+                    xmlFormat: Microsoft.Maps.GeoXmlFormat.kml,
+                    roundLocations: true
+                });
+            };
+
+            const url = "/positions";
+            fetch(url)
+                .then(data => data.json())
+                .then((json) => {
+                    console.log(JSON.stringify(json));
+
+                    json.forEach(function (pos) {
+                        var loc = new Microsoft.Maps.Location(pos.latitude, pos.longitude);
+                        console.log("Adding " + loc);
+                        map.entities.push(new Microsoft.Maps.Pushpin(loc, null));
+                    })
+                })
+        });
+    }
+</script>
+
+<script type='text/javascript'
+        src='https://www.bing.com/api/maps/mapcontrol?key=AlgVY9nJ0vEd5XtK7DnlkZW5_pyu5ymoRmHfCyT71T35mmaBV3qMcxghsSwTVevc&callback=loadMapScenario'
+        async defer></script>
+</body>
+
+</html>
