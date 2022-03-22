@@ -29,12 +29,72 @@
     //     window.location = location.href;
     // }
 
-    function loadMapScenario() {
-        var map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
-            /* No need to set credentials if already passed in URL */
-            center: new Microsoft.Maps.Location(38.6240528, -90.1771256),
-            zoom: 8
+    function calculateAverage(array) {
+        var total = 0.0;
+        var count = 0;
+
+        console.log("Preparing to average...");
+        for (let i = 0; i < array.length; i++) {
+            console.log("Array element " + i + ": " + array[i] + ".");
+        }
+
+        array.forEach(function(item, index) {
+            console.log("Item: " + item);
+
+            total += item;
+            count++;
         });
+
+        return total / count;
+    }
+
+    async function goFetch(url) {
+        const response = await fetch(url);
+        return await response.json();
+    }
+
+    function loadMapScenario() {
+        // const average = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
+        console.log("Load...")
+        var lats = [];
+        var lons = [];
+        var avlats = 0.0;
+        var avlons = 0.0;
+
+        const url = "/positions";
+        // fetch(url)
+        //     .then(data => data.json())
+        goFetch(url)
+            .then((json) => {
+                console.log(JSON.stringify(json));
+
+                json.forEach(function (pos) {
+                    var loc = new Microsoft.Maps.Location(pos.latitude, pos.longitude);
+                    lats.push(pos.latitude);
+                    lons.push(pos.longitude);
+                    // map.entities.push(new Microsoft.Maps.Pushpin(loc, null));
+                })
+                for (let i = 0; i < lats.length; i++) {
+                    console.log("Position " + i + ": " + lats[i] + ", " + lons[i] + ".");
+                }
+                avlats = calculateAverage(lats);
+                avlons = calculateAverage(lons);
+                console.log("Averages: " + avlats + ", " + avlons);
+            })
+
+        console.log("Averages outside of fetch: " + avlats + ", " + avlons);
+
+        var map = new Microsoft.Maps.Map(document.getElementById('myMap'),
+            {
+                center: new Microsoft.Maps.Location(avlats, avlons),
+                zoom: 8
+            }
+        );
+        // , {
+        //         /* No need to set credentials if already passed in URL */
+        //         center: new Microsoft.Maps.Location(38.6240528, -90.1771256),
+        //             zoom: 8
+        //     }
 
         Microsoft.Maps.loadModule('Microsoft.Maps.GeoXml', function () {
             var callback = function (dataset) {
@@ -55,18 +115,28 @@
                 });
             };
 
-            const url = "/positions";
-            fetch(url)
-                .then(data => data.json())
-                .then((json) => {
-                    console.log(JSON.stringify(json));
+            // var lats = [];
+            // var lons = [];
+            // const url = "/positions";
+            // fetch(url)
+            //     .then(data => data.json())
+            //     .then((json) => {
+            //         console.log(JSON.stringify(json));
+            //
+            //         json.forEach(function (pos) {
+            //             var loc = new Microsoft.Maps.Location(pos.latitude, pos.longitude);
+            //             // console.log("Adding " + loc);
+            //             lats.push(pos.latitude);
+            //             lons.push(pos.longitude);
+            //             map.entities.push(new Microsoft.Maps.Pushpin(loc, null));
+            //         })
+            //     })
 
-                    json.forEach(function (pos) {
-                        var loc = new Microsoft.Maps.Location(pos.latitude, pos.longitude);
-                        console.log("Adding " + loc);
-                        map.entities.push(new Microsoft.Maps.Pushpin(loc, null));
-                    })
-                })
+            for (let i = 0; i < lats.length; i++) {
+                var loc = new Microsoft.Maps.Location(lats[i], lons[i]);
+                map.entities.push(new Microsoft.Maps.Pushpin(loc, null));
+            }
+
         });
     }
 </script>
