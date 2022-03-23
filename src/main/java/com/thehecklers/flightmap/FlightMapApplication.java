@@ -32,8 +32,7 @@ class FMController {
 	Iterable<Position> getPositions(@RequestParam(required = false) String oc,
 									@RequestParam(required = false) String tracklo,
 									@RequestParam(required = false) String trackhi) {
-//		Test data
-//		return Arrays.asList(new Position(38.6240528F, -90.1771256F), new Position(38.5647893F,-90.165382F));
+
 		var ocParam = (null == oc ? "" : "oc=" + oc);
 		var trackParams = ((null == tracklo) || (null == trackhi) ? "" : "tracklo=" + tracklo +
 				"&trackhi=" + trackhi);
