@@ -4,11 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
@@ -21,12 +19,11 @@ public class FlightMapApplication {
 
 }
 
-@Controller
+@RestController
 class FMController {
 	private final WebClient client = WebClient.create("http://localhost:9090");
 
 	@GetMapping("/positions")
-	@ResponseBody
 	Flux<Position> getPositions(@RequestParam(required = false) String oc,
 								@RequestParam(required = false) String tracklo,
 								@RequestParam(required = false) String trackhi) {
@@ -41,11 +38,6 @@ class FMController {
 				.uri("/positions" + (allParams.length() > 0 ? "?" + allParams : ""))
 				.retrieve()
 				.bodyToFlux(Position.class);
-	}
-
-	@GetMapping("/map")
-	String loadMap(Model model) {
-		return "mapdisplay";
 	}
 }
 
