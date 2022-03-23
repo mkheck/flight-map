@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 
 @SpringBootApplication
 public class FlightMapApplication {
@@ -26,9 +27,9 @@ class FMController {
 
 	@GetMapping("/positions")
 	@ResponseBody
-	Iterable<Position> getPositions(@RequestParam(required = false) String oc,
-									@RequestParam(required = false) String tracklo,
-									@RequestParam(required = false) String trackhi) {
+	Flux<Position> getPositions(@RequestParam(required = false) String oc,
+								@RequestParam(required = false) String tracklo,
+								@RequestParam(required = false) String trackhi) {
 
 		var ocParam = (null == oc ? "" : "oc=" + oc);
 		var trackParams = ((null == tracklo) || (null == trackhi) ? "" : "tracklo=" + tracklo +
@@ -39,9 +40,7 @@ class FMController {
 		return client.get()
 				.uri("/positions" + (allParams.length() > 0 ? "?" + allParams : ""))
 				.retrieve()
-				.bodyToFlux(Position.class)
-				.collectList()
-				.block();
+				.bodyToFlux(Position.class);
 	}
 
 	@GetMapping("/map")
